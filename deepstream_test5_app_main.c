@@ -379,7 +379,7 @@ meta_free_func (gpointer data, gpointer user_data)
 generate_event_msg_meta (gpointer data, gint class_id, gboolean useTs,
 	GstClockTime ts, gchar * src_uri, gint stream_id, guint sensor_id,
 	AnalyticsUserMeta * obj_params, float scaleW, float scaleH,
-	NvDsFrameMeta * frame_meta)
+	NvDsFrameMeta * frame_meta, NvDsObjectMeta * obj_meta)
 {
     NvDsEventMsgMeta *meta = (NvDsEventMsgMeta *) data;
     GstClockTime ts_generated = 0;
@@ -403,6 +403,11 @@ generate_event_msg_meta (gpointer data, gint class_id, gboolean useTs,
     meta->trackingId = class_id;
 
     (void) ts_generated;
+    // Add bounding box coordinates and size
+    meta->bbox.top = obj_meta->rect_params.top;
+    meta->bbox.left = obj_meta->rect_params.left;
+    meta->bbox.width = obj_meta->rect_params.width;
+    meta->bbox.height = obj_meta->rect_params.height;
     meta->type = NVDS_EVENT_ENTRY;
     meta->objType = NVDS_OBJECT_TYPE_PERSON;
     meta->objClassId = PERSON_ID;
@@ -523,7 +528,7 @@ bbox_generated_probe_after_analytics (AppCtx * appCtx, GstBuffer * buf,
 			buffer_pts,
 			appCtx->config.multi_source_config[stream_id].uri, stream_id,
 			appCtx->config.multi_source_config[stream_id].camera_id,
-			user_data, scaleW, scaleH, frame_meta);
+			user_data, scaleW, scaleH, frame_meta, obj_meta);
 		testAppCtx->streams[stream_id].meta_number++;
 		NvDsUserMeta *user_event_meta =
 		    nvds_acquire_user_meta_from_pool (batch_meta);
