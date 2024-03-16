@@ -93,8 +93,8 @@ enable=1
 type=6
 msg-conv-config=msgconv_sample_config.txt
 # Name of library having custom implementation.
-# msg-conv-msg2p-lib=/opt/nvidia/deepstream/deepstream/sources/apps/sample_apps/deepstream-occupancy-analytics/bin/jetson/libnvds_msgconv.so
-msg-conv-msg2p-lib=/opt/nvidia/deepstream/deepstream/sources/apps/sample_apps/deepstream-occupancy-analytics/bin/x86/libnvds_msgconv.so
+# msg-conv-msg2p-lib=/opt/nvidia/deepstream/deepstream/sources/apps/sample_apps/deepstream-video-analytics-cafe/bin/jetson/libnvds_msgconv.so
+msg-conv-msg2p-lib=/opt/nvidia/deepstream/deepstream/sources/apps/sample_apps/deepstream-video-analytics-cafe/bin/x86/libnvds_msgconv.so
 #(0): PAYLOAD_DEEPSTREAM - Deepstream schema payload
 #(1): PAYLOAD_DEEPSTREAM_MINIMAL - Deepstream schema payload minimal
 #(256): PAYLOAD_RESERVED - Reserved type
