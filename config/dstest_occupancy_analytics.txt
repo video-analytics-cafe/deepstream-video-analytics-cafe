@@ -102,7 +102,7 @@ msg-conv-msg2p-lib=/opt/nvidia/deepstream/deepstream/sources/apps/sample_apps/de
 msg-conv-payload-type=0
 msg-broker-proto-lib=/opt/nvidia/deepstream/deepstream/lib/libnvds_kafka_proto.so
 #Provide your msg-broker-conn-str here
-msg-broker-conn-str=localhost;9092;quickstart-events
+msg-broker-conn-str=kafka;9092;quickstart-events
 #topic=<topic>
 #Optional:
 #msg-broker-config=../../deepstream-test4/cfg_kafka.txt
@@ -138,7 +138,7 @@ msg-conv-payload-type=0
 [message-consumer0]
 enable=0
 proto-lib=/opt/nvidia/deepstream/deepstream/lib/libnvds_kafka_proto.so
-conn-str=localhost;9092
+conn-str=kafka;9092
 #config-file=<broker config file e.g. cfg_kafka.txt>
 subscribe-topic-list=quickstart-events
 # Use this option if message has sensor name as id instead of index (0,1,2 etc.).
