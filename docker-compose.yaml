@@ -11,7 +11,7 @@ services:
 #      - "3030:3030"
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
-      - KAFKA_HOST=kafka1
+      - KAFKA_HOST=kafka1-deepstreem_resnet
       - KAFKA_PORT=9092
       - KAFKA_TOPIC=quickstart-events
       - KAFKA_GROUP_ID=0
@@ -24,14 +24,14 @@ services:
     networks:
       - arch-network
     depends_on:
-      - kafka1
-      - kafka2
+      - kafka1-deepstreem_resnet
+      - kafka2-deepstreem_resnet
 #      - consumer
       - kafka-ui
 
-  kafka1:
+  kafka1-deepstreem_resnet:
       image: 'bitnami/kafka:latest'
-      container_name: kafka1
+      container_name: kafka1-deepstreem_resnet
       ports:
       #   - "2181:2181"
          - "9092:9092"
@@ -42,10 +42,10 @@ services:
         KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
         KAFKA_CFG_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"
         KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
-        KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka1:9092"
+        KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka1-deepstreem_resnet:9092"
         KAFKA_BROKER_ID: 1
         KAFKA_CFG_NODE_ID: 1
-        KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka1:9093,2@kafka2:9093"
+        KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka1-deepstreem_resnet:9093,2@kafka2-deepstreem_resnet:9093"
         ALLOW_PLAINTEXT_LISTENER: "yes"
         KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
         KAFKA_KRAFT_CLUSTER_ID: "dh6khitPSDGZSBOjNeTC_g"
@@ -59,9 +59,9 @@ services:
       networks:
         - arch-network
 
-  kafka2:
+  kafka2-deepstreem_resnet:
       image: 'bitnami/kafka:latest'
-      container_name: kafka2
+      container_name: kafka2-deepstreem_resnet
       # ports:
       #   - "2181:2181"
       #   - "9092:9092"
@@ -72,10 +72,10 @@ services:
         KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
         KAFKA_CFG_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"
         KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
-        KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka2:9092"
+        KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka2-deepstreem_resnet:9092"
         KAFKA_BROKER_ID: 2
         KAFKA_CFG_NODE_ID: 2
-        KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka1:9093,2@kafka2:9093"
+        KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka1-deepstreem_resnet:9093,2@kafka2-deepstreem_resnet:9093"
         ALLOW_PLAINTEXT_LISTENER: "yes"
         KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
         KAFKA_KRAFT_CLUSTER_ID: "dh6khitPSDGZSBOjNeTC_g"
@@ -89,33 +89,33 @@ services:
       networks:
         - arch-network
 
-  kafka-ui:
+  kafka-ui-deepstreem_resnet:
       image: provectuslabs/kafka-ui:v0.4.0
       ports:
         - "8777:8080"
       environment:
-        KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: "kafka1:9092,kafka2:9092"
+        KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: "kafka1-deepstreem_resnet:9092,kafka2-deepstreem_resnet:9092"
         KAFKA_CLUSTERS_0_NAME: "kraft"
       networks:
         - arch-network
 
-  consumer:
+  consumer-deepstreem_resnet:
     build:
 #      context: consumer
       context: consumer-java
       dockerfile: Dockerfile
-    container_name: consumer
+    container_name: consumer-deepstreem_resnet
     restart: always
     environment:
-      - KAFKA_HOST=kafka1
+      - KAFKA_HOST=kafka1-deepstreem_resnet
       - KAFKA_PORT=9092
       - KAFKA_TOPIC=quickstart-events
       - KAFKA_GROUP_ID=0
     networks:
       - arch-network
     depends_on:
-      - kafka1
-      - kafka2
+      - kafka1-deepstreem_resnet
+      - kafka2-deepstreem_resnet
 
 networks:
   arch-network:
