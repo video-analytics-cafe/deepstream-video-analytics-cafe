@@ -1,14 +1,9 @@
-FROM nvcr.io/nvidia/deepstream:6.4-samples
+FROM nvcr.io/nvidia/deepstream:6.4-gc-triton-devel
 
-# Setup environment variables for CUDA Toolkit
-ENV CUDA_HOME=/usr/local/cuda
-ENV PATH=${CUDA_HOME}/bin:${PATH}
-ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
-
-# Install additional packages
+# Install additional apt packages
 RUN apt-get update && apt-get install -y \
-    libjson-glib-dev \
-    #libssl3 \
+    xvfb \
+    libssl3 \
     libssl-dev \
     libgstreamer1.0-0 \
     gstreamer1.0-tools \
@@ -18,39 +13,25 @@ RUN apt-get update && apt-get install -y \
     gstreamer1.0-libav \
     libgstreamer-plugins-base1.0-dev \
     libgstrtspserver-1.0-0 \
-    libgstrtspserver-1.0-dev \
     libjansson4 \
     libyaml-cpp-dev \
+    libjsoncpp-dev \
+    protobuf-compiler \
+    gcc \
+    make \
+    git \
+    python3 \
+    ffmpeg \
+    libmpg123-0 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get -y --no-install-recommends install \
-    git \
-    autoconf \
-    automake \
-    libtool \
-    gstreamer-1.0 \
-    gstreamer1.0-dev \
-    libgstreamer1.0-0 \
-    gstreamer1.0-plugins-base \
-    gstreamer1.0-plugins-good \
-    gstreamer1.0-plugins-bad \
-    gstreamer1.0-plugins-ugly \
-    gstreamer1.0-libav \
-#    gstreamer1.0-doc \
-    gstreamer1.0-tools \
-#    gstreamer1.0-x \
-#    gstreamer1.0-alsa \
-#    gstreamer1.0-gl \
-#    gstreamer1.0-gtk3 \
-#    gstreamer1.0-qt5 \
-#    gstreamer1.0-pulseaudio \
-#    python-gst-1.0 \
-#    libgirepository1.0-dev \
-    libcairo2-dev \
-    gir1.2-gstreamer-1.0 \
-    python3-gi
-#    python-gi-dev
-
+ENV NVIDIA_DRIVER_CAPABILITIES video,compute,graphics,utility
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV GST_DEBUG=3
+ENV CUDA_VER=12.3
+ENV CUDA_HOME=/usr/local/cuda-${CUDA_VER}
+ENV CFLAGS="-I$CUDA_HOME/include $CFLAGS"
+ENV PATH=${CUDA_HOME}/bin:${PATH}
 
 RUN pkg-config --cflags json-glib-1.0
 
@@ -66,6 +47,3 @@ RUN cd deepstream-occupancy-analytics/config && \
 WORKDIR /opt/nvidia/deepstream/deepstream/sources/apps/sample_apps/deepstream-occupancy-analytics/
 
 RUN make CUDA_VER=12.3
-
-
-CMD ["./deepstream-test5-analytics", "-c", "config/dstest_occupancy_analytics.txt"]

@@ -1,5 +1,33 @@
-version: '3.8'
+version: "3.9"
+
 services:
+  stream:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["./deepstream-test5-analytics", "-c", "config/dstest_occupancy_analytics.txt"]
+#    ports:
+#      - "8012:8000"
+#      - "3030:3030"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - KAFKA_HOST=kafka1
+      - KAFKA_PORT=9092
+      - KAFKA_TOPIC=quickstart-events
+      - KAFKA_GROUP_ID=0
+      - DISPLAY=:1
+    volumes:
+      - './input/:/input/'
+      - './output/:/output/'
+      - /tmp/.X11-unix/:/tmp/.X11-unix
+    runtime: nvidia
+    networks:
+      - arch-network
+    depends_on:
+      - kafka1
+      - kafka2
+#      - consumer
+      - kafka-ui
 
   kafka1:
       image: 'bitnami/kafka:latest'
@@ -64,36 +92,35 @@ services:
   kafka-ui:
       image: provectuslabs/kafka-ui:v0.4.0
       ports:
-        - "8888:8080"
+        - "8777:8080"
       environment:
         KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: "kafka1:9092,kafka2:9092"
         KAFKA_CLUSTERS_0_NAME: "kraft"
       networks:
         - arch-network
 
-
-  deepstream-people:
-    #image: nvcr.io/nvidia/deepstream:6.4-samples
+  consumer:
     build:
-      context: .
-      dockerfile: ./docker/deepstream/Dockerfile
-    container_name: deepstream-people
-    #restart: unless-stopped
+#      context: consumer
+      context: consumer-java
+      dockerfile: Dockerfile
+    container_name: consumer
+    restart: always
     environment:
-      - CUDA_VER=12.3
-      - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=video,compute,utility
-    network_mode: "host"
-    #command: /opt/nvidia/deepstream/deepstream/bin/deepstream-app -c ./config_infer_primary_yoloV8_pose.txt
-    #command: ./sh while :; do echo "This will run forever until you press Ctrl+C"; done
-    runtime: nvidia
-    devices:
-      - /dev/snd:/dev/snd
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              capabilities: [gpu]
-    stdin_open: true
-    tty: true
+      - KAFKA_HOST=kafka1
+      - KAFKA_PORT=9092
+      - KAFKA_TOPIC=quickstart-events
+      - KAFKA_GROUP_ID=0
+    networks:
+      - arch-network
+    depends_on:
+      - kafka1
+      - kafka2
+
+networks:
+  arch-network:
+    driver: "bridge"
+
+volumes:
+  kafka_volume1:
+  kafka_volume2:
