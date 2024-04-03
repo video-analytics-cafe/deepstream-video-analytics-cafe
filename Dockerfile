@@ -46,4 +46,4 @@ RUN cd deepstream-video-analytics-cafe/config && \
 
 WORKDIR /opt/nvidia/deepstream/deepstream/sources/apps/sample_apps/deepstream-occupancy-analytics/
 
-RUN make CUDA_VER=12.3
+RUN CUDA_VER=12.3 make
