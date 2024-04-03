@@ -39,7 +39,7 @@ WORKDIR /opt/nvidia/deepstream/deepstream/sources/apps/sample_apps/
 
 COPY . deepstream-video-analytics-cafe
 
-RUN cd deepstream-occupancy-analytics/config && \
+RUN cd deepstream-video-analytics-cafe/config && \
     chmod +x model.sh && \
     ./model.sh && \
     cd ..
