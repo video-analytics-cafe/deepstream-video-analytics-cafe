@@ -26,8 +26,8 @@ services:
     depends_on:
       - kafka1-deepstreem_resnet
       - kafka2-deepstreem_resnet
-#      - consumer
-      - kafka-ui
+#      - consumer-deepstreem_resnet
+      - kafka-ui-deepstreem_resnet
 
   kafka1-deepstreem_resnet:
       image: 'bitnami/kafka:latest'
