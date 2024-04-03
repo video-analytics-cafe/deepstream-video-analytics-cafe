@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: ["./deepstream-test5-analytics", "-c", "config/dstest_occupancy_analytics.txt"]
+#    command: ["./deepstream-test5-analytics", "-c", "config/dstest_occupancy_analytics.txt"]
 #    ports:
 #      - "8012:8000"
 #      - "3030:3030"
