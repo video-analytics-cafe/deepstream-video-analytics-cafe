@@ -50,7 +50,7 @@ services:
         KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
         KAFKA_KRAFT_CLUSTER_ID: "dh6khitPSDGZSBOjNeTC_g"
       volumes:
-        - kafka_volume1:/bitnami/kafka
+        - kafka_volume1ds:/bitnami/kafka
       healthcheck:
         test: [ "CMD-SHELL", "kafka-broker-api-versions.sh --bootstrap-server=localhost:9092" ]
         interval: 30s
@@ -80,7 +80,7 @@ services:
         KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
         KAFKA_KRAFT_CLUSTER_ID: "dh6khitPSDGZSBOjNeTC_g"
       volumes:
-        - kafka_volume2:/bitnami/kafka
+        - kafka_volume2ds:/bitnami/kafka
       healthcheck:
         test: ["CMD-SHELL", "kafka-broker-api-versions.sh --bootstrap-server=localhost:9092"]
         interval: 30s
@@ -122,5 +122,5 @@ networks:
     driver: "bridge"
 
 volumes:
-  kafka_volume1:
-  kafka_volume2:
+  kafka_volume1ds:
+  kafka_volume2ds:
