@@ -47,3 +47,5 @@ RUN cd deepstream-video-analytics-cafe/config && \
 WORKDIR /opt/nvidia/deepstream/deepstream/sources/apps/sample_apps/deepstream-video-analytics-cafe/
 
 RUN CUDA_VER=12.3 make
+
+ENTRYPOINT ["scripts/entrypoint.sh"]
