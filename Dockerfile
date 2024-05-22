@@ -41,7 +41,7 @@ RUN apt-get -y --no-install-recommends install \
 #    gstreamer1.0-pulseaudio \
 #    python-gst-1.0 \
 #    libgirepository1.0-dev \
-    libcairo2-dev \
+#    libcairo2-dev \
     gir1.2-gstreamer-1.0 \
     python3-gi
 #    python-gi-dev
