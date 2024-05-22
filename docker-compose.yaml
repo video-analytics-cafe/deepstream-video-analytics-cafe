@@ -26,7 +26,7 @@ services:
       - arch-network
     depends_on:
       - kafka1-deepstreem_resnet
-      - kafka2-deepstreem_resnet
+#      - kafka2-deepstreem_resnet
 #      - consumer-deepstreem_resnet
       - kafka-ui-deepstreem_resnet
 
@@ -58,7 +58,7 @@ services:
       ports:
         - "8777:8080"
       environment:
-        KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: "kafka1-deepstreem_resnet:9092,kafka2-deepstreem_resnet:9092"
+        KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: "kafka1-deepstreem_resnet:9092"
         KAFKA_CLUSTERS_0_NAME: "kraft"
       networks:
         - arch-network
@@ -79,7 +79,7 @@ services:
       - arch-network
     depends_on:
       - kafka1-deepstreem_resnet
-      - kafka2-deepstreem_resnet
+#      - kafka2-deepstreem_resnet
 
 networks:
   arch-network:
