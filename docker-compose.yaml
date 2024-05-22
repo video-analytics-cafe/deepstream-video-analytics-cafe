@@ -30,65 +30,28 @@ services:
 #      - consumer-deepstreem_resnet
       - kafka-ui-deepstreem_resnet
 
-  kafka1-deepstreem_resnet:
-      image: 'bitnami/kafka:latest'
-      container_name: kafka1-deepstreem_resnet
-      ports:
-      #   - "2181:2181"
-         - "9092:9092"
-      #   - "9093:9093"
-      environment:
-        KAFKA_ENABLE_KRAFT: "yes"
-        KAFKA_CFG_PROCESS_ROLES: "broker,controller"
-        KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
-        KAFKA_CFG_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"
-        KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
-        KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka1-deepstreem_resnet:9092"
-        KAFKA_BROKER_ID: 1
-        KAFKA_CFG_NODE_ID: 1
-        KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka1-deepstreem_resnet:9093,2@kafka2-deepstreem_resnet:9093"
-        ALLOW_PLAINTEXT_LISTENER: "yes"
-        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-        KAFKA_KRAFT_CLUSTER_ID: "dh6khitPSDGZSBOjNeTC_g"
-      volumes:
-        - kafka_volume1ds:/bitnami/kafka
-      healthcheck:
-        test: [ "CMD-SHELL", "kafka-broker-api-versions.sh --bootstrap-server=localhost:9092" ]
-        interval: 30s
-        timeout: 10s
-        retries: 5
-      networks:
-        - arch-network
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.4
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
 
-  kafka2-deepstreem_resnet:
-      image: 'bitnami/kafka:latest'
-      container_name: kafka2-deepstreem_resnet
-      # ports:
-      #   - "2181:2181"
-      #   - "9092:9092"
-      #   - "9093:9093"
-      environment:
-        KAFKA_ENABLE_KRAFT: "yes"
-        KAFKA_CFG_PROCESS_ROLES: "broker,controller"
-        KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
-        KAFKA_CFG_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"
-        KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
-        KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka2-deepstreem_resnet:9092"
-        KAFKA_BROKER_ID: 2
-        KAFKA_CFG_NODE_ID: 2
-        KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka1-deepstreem_resnet:9093,2@kafka2-deepstreem_resnet:9093"
-        ALLOW_PLAINTEXT_LISTENER: "yes"
-        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-        KAFKA_KRAFT_CLUSTER_ID: "dh6khitPSDGZSBOjNeTC_g"
-      volumes:
-        - kafka_volume2ds:/bitnami/kafka
-      healthcheck:
-        test: ["CMD-SHELL", "kafka-broker-api-versions.sh --bootstrap-server=localhost:9092"]
-        interval: 30s
-        timeout: 10s
-        retries: 5
-      networks:
-        - arch-network
+  kafka1-deepstreem_resnet:
+    image: confluentinc/cp-kafka:7.4.4
+    depends_on:
+      - zookeeper
+    ports:
+      - 29092:29092
+      - 9092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1-deepstreem_resnet:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
   kafka-ui-deepstreem_resnet:
       image: provectuslabs/kafka-ui:v0.4.0
