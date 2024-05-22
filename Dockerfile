@@ -1,4 +1,4 @@
-FROM nvcr.io/nvidia/deepstream:6.4-gc-triton-devel
+FROM nvcr.io/nvidia/deepstream:6.4-samples
 
 # Install additional packages
 RUN apt-get update && apt-get install -y \
@@ -46,13 +46,6 @@ RUN apt-get -y --no-install-recommends install \
     python3-gi
 #    python-gi-dev
 
-ENV NVIDIA_DRIVER_CAPABILITIES video,compute,graphics,utility
-ENV NVIDIA_VISIBLE_DEVICES all
-ENV GST_DEBUG=3
-ENV CUDA_VER=12.3
-ENV CUDA_HOME=/usr/local/cuda-${CUDA_VER}
-ENV CFLAGS="-I$CUDA_HOME/include $CFLAGS"
-ENV PATH=${CUDA_HOME}/bin:${PATH}
 
 RUN pkg-config --cflags json-glib-1.0
 
