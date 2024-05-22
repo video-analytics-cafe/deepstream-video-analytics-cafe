@@ -1,4 +1,4 @@
-FROM nvcr.io/nvidia/deepstream:6.3-samples
+FROM nvcr.io/nvidia/deepstream:6.3-gc-triton-devel
 
 # Install additional packages
 RUN apt-get update && apt-get install -y \
@@ -41,7 +41,7 @@ RUN apt-get -y --no-install-recommends install \
 #    gstreamer1.0-pulseaudio \
 #    python-gst-1.0 \
 #    libgirepository1.0-dev \
-#    libcairo2-dev \
+    libcairo2-dev \
     gir1.2-gstreamer-1.0 \
     python3-gi
 #    python-gi-dev
