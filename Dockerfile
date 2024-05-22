@@ -1,4 +1,4 @@
-FROM nvcr.io/nvidia/eepstream:6.3-samples
+FROM nvcr.io/nvidia/deepstream:6.3-samples
 
 # Install additional packages
 RUN apt-get update && apt-get install -y \
