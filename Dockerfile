@@ -1,4 +1,4 @@
-FROM nvcr.io/nvidia/deepstream:6.3-gc-triton-devel
+FROM nvcr.io/nvidia/deepstream:6.2-devel
 
 # Install additional packages
 RUN apt-get update && apt-get install -y \
