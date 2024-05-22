@@ -1,9 +1,38 @@
-version: '3.8'
-services:
+version: "3.9"
 
-  kafka1:
+services:
+  deepstreem_resnet:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["./deepstream-test5-analytics", "-c", "config/dstest_occupancy_analytics.txt"]
+#    command: ["python3", "-m", "http.server"]
+#    ports:
+#      - "8012:8000"
+#      - "3030:3030"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - KAFKA_HOST=kafka1-deepstreem_resnet
+      - KAFKA_PORT=9092
+      - KAFKA_TOPIC=quickstart-events
+      - KAFKA_GROUP_ID=0
+      - DISPLAY=:1
+    volumes:
+      - './input/:/input/'
+      - './output/:/output/'
+      - /tmp/.X11-unix/:/tmp/.X11-unix
+    runtime: nvidia
+    networks:
+      - arch-network
+    depends_on:
+      - kafka1-deepstreem_resnet
+      - kafka2-deepstreem_resnet
+#      - consumer-deepstreem_resnet
+      - kafka-ui-deepstreem_resnet
+
+  kafka1-deepstreem_resnet:
       image: 'bitnami/kafka:latest'
-      container_name: kafka1
+      container_name: kafka1-deepstreem_resnet
       ports:
       #   - "2181:2181"
          - "9092:9092"
@@ -14,15 +43,15 @@ services:
         KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
         KAFKA_CFG_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"
         KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
-        KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka1:9092"
+        KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka1-deepstreem_resnet:9092"
         KAFKA_BROKER_ID: 1
         KAFKA_CFG_NODE_ID: 1
-        KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka1:9093,2@kafka2:9093"
+        KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka1-deepstreem_resnet:9093,2@kafka2-deepstreem_resnet:9093"
         ALLOW_PLAINTEXT_LISTENER: "yes"
         KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
         KAFKA_KRAFT_CLUSTER_ID: "dh6khitPSDGZSBOjNeTC_g"
       volumes:
-        - kafka_volume1:/bitnami/kafka
+        - kafka_volume1ds:/bitnami/kafka
       healthcheck:
         test: [ "CMD-SHELL", "kafka-broker-api-versions.sh --bootstrap-server=localhost:9092" ]
         interval: 30s
@@ -31,9 +60,9 @@ services:
       networks:
         - arch-network
 
-  kafka2:
+  kafka2-deepstreem_resnet:
       image: 'bitnami/kafka:latest'
-      container_name: kafka2
+      container_name: kafka2-deepstreem_resnet
       # ports:
       #   - "2181:2181"
       #   - "9092:9092"
@@ -44,15 +73,15 @@ services:
         KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
         KAFKA_CFG_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"
         KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
-        KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka2:9092"
+        KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka2-deepstreem_resnet:9092"
         KAFKA_BROKER_ID: 2
         KAFKA_CFG_NODE_ID: 2
-        KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka1:9093,2@kafka2:9093"
+        KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka1-deepstreem_resnet:9093,2@kafka2-deepstreem_resnet:9093"
         ALLOW_PLAINTEXT_LISTENER: "yes"
         KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
         KAFKA_KRAFT_CLUSTER_ID: "dh6khitPSDGZSBOjNeTC_g"
       volumes:
-        - kafka_volume2:/bitnami/kafka
+        - kafka_volume2ds:/bitnami/kafka
       healthcheck:
         test: ["CMD-SHELL", "kafka-broker-api-versions.sh --bootstrap-server=localhost:9092"]
         interval: 30s
@@ -61,39 +90,38 @@ services:
       networks:
         - arch-network
 
-  kafka-ui:
+  kafka-ui-deepstreem_resnet:
       image: provectuslabs/kafka-ui:v0.4.0
       ports:
-        - "8888:8080"
+        - "8777:8080"
       environment:
-        KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: "kafka1:9092,kafka2:9092"
+        KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: "kafka1-deepstreem_resnet:9092,kafka2-deepstreem_resnet:9092"
         KAFKA_CLUSTERS_0_NAME: "kraft"
       networks:
         - arch-network
 
-
-  deepstream-people:
-    #image: nvcr.io/nvidia/deepstream:6.4-samples
+  consumer-deepstreem_resnet:
     build:
-      context: .
-      dockerfile: ./docker/deepstream/Dockerfile
-    container_name: deepstream-people
-    #restart: unless-stopped
+#      context: consumer
+      context: consumer-java
+      dockerfile: Dockerfile
+    container_name: consumer-deepstreem_resnet
+    restart: always
     environment:
-      - CUDA_VER=12.3
-      - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=video,compute,utility
-    network_mode: "host"
-    #command: /opt/nvidia/deepstream/deepstream/bin/deepstream-app -c ./config_infer_primary_yoloV8_pose.txt
-    #command: ./sh while :; do echo "This will run forever until you press Ctrl+C"; done
-    runtime: nvidia
-    devices:
-      - /dev/snd:/dev/snd
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              capabilities: [gpu]
-    stdin_open: true
-    tty: true
+      - KAFKA_HOST=kafka1-deepstreem_resnet
+      - KAFKA_PORT=9092
+      - KAFKA_TOPIC=quickstart-events
+      - KAFKA_GROUP_ID=0
+    networks:
+      - arch-network
+    depends_on:
+      - kafka1-deepstreem_resnet
+      - kafka2-deepstreem_resnet
+
+networks:
+  arch-network:
+    driver: "bridge"
+
+volumes:
+  kafka_volume1ds:
+  kafka_volume2ds:
